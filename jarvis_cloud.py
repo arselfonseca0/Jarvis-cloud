@@ -37,8 +37,8 @@ if CHAVE_API_GEMINI:
 else:
     print("[AVISO] CHAVE_API_GEMINI não encontrada no ambiente!", flush=True)
 
-# Modelos oficiais e suportados pela API v1
-modelos_ia = ["gemini-2.0-flash", "gemini-1.5-flash"]
+# Modelos recomendados e ativos na API oficial da Google
+modelos_ia = ["gemini-2.5-flash", "gemini-2.5-pro"]
 
 # ==========================================
 # IDENTIDADE E INSTRUÇÕES
@@ -149,7 +149,7 @@ def processar_ia(tarefa):
     tarefa_min = tarefa.lower()
     
     # Respostas locais instantâneas
-    if any(g in tarefa_min for g in ["horas", "hora", "que horas"]):
+    if any(g in tarefa_min for g in ["horas", "hora", "que horas", "sao que", "são que"]):
         return obter_horas()
     elif any(g in tarefa_min for g in ["tempo", "clima", "chover", "graus", "temperatura"]):
         return obter_clima()
@@ -205,7 +205,6 @@ def radar_telegram():
         print("[RADAR ERRO] TELEGRAM_KEY não foi encontrada nas variáveis de ambiente!", flush=True)
         return
 
-    # Limpeza preventiva de Webhook (Evita o erro de conflito no Telegram)
     try:
         requests.get(f"https://api.telegram.org/bot{CHAVE_TELEGRAM}/deleteWebhook", timeout=5)
         print("[RADAR] Webhook do Telegram limpo com sucesso.", flush=True)
