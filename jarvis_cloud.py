@@ -30,7 +30,7 @@ CHAVE_TELEGRAM = os.environ.get("TELEGRAM_KEY")
 if CHAVE_API_GEMINI:
     client = genai.Client(api_key=CHAVE_API_GEMINI)
 
-modelos_ia = ["gemini-1.5-pro", "gemini-1.5-flash-latest", "gemini-1.5-flash-8b"]
+modelos_ia = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 
 # ==========================================
 # IDENTIDADE E INSTRUÇÕES
