@@ -18,7 +18,7 @@ from google import genai
 from google.genai import types
 
 # ==========================================
-# AS TUAS CHAVES MESTRAS (AGORA INVISÍVEIS)
+# AS TUAS CHAVES MESTRAS (INVISÍVEIS)
 # O código vai buscá-las ao cofre do Render!
 # ==========================================
 CHAVE_API_GEMINI = os.environ.get("GEMINI_KEY")
@@ -30,6 +30,7 @@ CHAVE_TELEGRAM = os.environ.get("TELEGRAM_KEY")
 if CHAVE_API_GEMINI:
     client = genai.Client(api_key=CHAVE_API_GEMINI)
 
+# Modelos oficiais, modernos e suportados pela API v1
 modelos_ia = ["gemini-2.0-flash", "gemini-1.5-flash"]
 
 # ==========================================
@@ -43,6 +44,7 @@ def obter_configuracao():
     data_hoje = f"{dias_semana[datetime.datetime.now().weekday()]}, {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
     instrucoes = f"""
     És o Jarvis, o assistente pessoal e amigo de confiança do {nome} (um jovem de 18 anos, estudante de Eletrónica no {escola}).
+    Nota de contexto: O Jarvis é um projeto pessoal autónomo do Arsel e não tem nada a ver com a PAP dele.
     Fala de forma descontraída, inteligente e perspicaz. Responde sempre em português de Portugal.
     NÃO uses emojis nem formatações (* ou **). Mantém frases curtas. Não fales da PAP a não ser que ele puxe o assunto.
     Data de hoje: {data_hoje}. 
@@ -130,7 +132,7 @@ def processar_ia(tarefa):
         return obter_clima()
     elif any(g in tarefa_min for g in ["notícias", "noticias", "manchetes", "mundo"]):
         return obter_noticias()
-    elif any(g in tarefa_min for g in ["lê os meus emails", "mensagens novas", "ver o correio"]):
+    elif any(g in tarefa_min for g in ["email", "emails", "correio", "caixa de entrada"]):
         return verificar_emails()
     
     texto_final = None
@@ -206,13 +208,9 @@ def home():
     return "<h1>A MÁQUINA ESTÁ VIVA. JARVIS CLOUD ONLINE E A ESCUTAR.</h1>"
 
 def iniciar_servidor_web():
-    # O Render exige que o servidor procure a porta do sistema
     porta = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=porta)
 
 if __name__ == "__main__":
-    # Arranca o Radar do Telegram em segundo plano (Thread invisível)
     threading.Thread(target=radar_telegram, daemon=True).start()
-    
-    # Arranca o site fantasma em primeiro plano (impede que o código morra)
     iniciar_servidor_web()
