@@ -30,7 +30,7 @@ CHAVE_TELEGRAM = os.environ.get("TELEGRAM_KEY")
 if CHAVE_API_GEMINI:
     client = genai.Client(api_key=CHAVE_API_GEMINI)
 
-# Modelos oficiais, modernos e suportados pela API v1
+# Modelos oficiais e suportados pela API v1
 modelos_ia = ["gemini-2.0-flash", "gemini-1.5-flash"]
 
 # ==========================================
@@ -59,6 +59,12 @@ def obter_configuracao():
 # ==========================================
 # HABILIDADES NATIVAS (ESCUDO LOCAL)
 # ==========================================
+def obter_horas():
+    dias_semana = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"]
+    agora = datetime.datetime.now()
+    dia = dias_semana[agora.weekday()]
+    return f"Chefe, agora são {agora.strftime('%H:%M')} de {dia}, dia {agora.strftime('%d/%m/%Y')}."
+
 def obter_clima():
     try:
         url = "https://api.open-meteo.com/v1/forecast?latitude=41.13&longitude=-8.61&current=temperature_2m,wind_speed_10m&timezone=Europe%2FLisbon"
@@ -128,7 +134,10 @@ def processar_ia(tarefa):
     print(f"[JARVIS] A processar ordem: {tarefa}")
     tarefa_min = tarefa.lower()
     
-    if any(g in tarefa_min for g in ["tempo", "clima", "chover", "graus", "temperatura"]):
+    # Respostas locais instantâneas (Sem gastar API)
+    if any(g in tarefa_min for g in ["horas", "hora", "que horas"]):
+        return obter_horas()
+    elif any(g in tarefa_min for g in ["tempo", "clima", "chover", "graus", "temperatura"]):
         return obter_clima()
     elif any(g in tarefa_min for g in ["notícias", "noticias", "manchetes", "mundo"]):
         return obter_noticias()
@@ -160,11 +169,12 @@ def processar_ia(tarefa):
                 texto_final = texto_ia
             break 
         except Exception as e:
-            ultimo_erro = e
+            ultimo_erro = str(e)
+            print(f"[JARVIS] Erro no modelo {modelo}: {e}")
             time.sleep(1)
             
     if not texto_final:
-        return f"[Erro de Conexão na Nuvem: {ultimo_erro}]"
+        return "Desculpa chefe, estou a atualizar a ligação aos servidores da Google. Tenta novamente dentro de instantes."
         
     return texto_final
 
